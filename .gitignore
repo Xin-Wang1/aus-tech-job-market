@@ -30,5 +30,7 @@ __pycache__/
 .env.*
 !.env.example
 
-# Local job data
+# Generated datasets and reports
 backend/data/raw/
+backend/data/processed/
+backend/reports/
