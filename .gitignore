@@ -19,3 +19,16 @@ __pycache__/
 # Local files
 .DS_Store
 *.log
+
+# Python environment
+backend/.venv/
+__pycache__/
+*.py[cod]
+
+# API credentials
+.env
+.env.*
+!.env.example
+
+# Local job data
+backend/data/raw/
