@@ -1,22 +1,17 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_db_connection
+from app.routers.analytics import router as analytics_router
 
 
-# Create FastAPI application
 app = FastAPI(
     title="Australian Tech Job Market API",
-    description=(
-        "REST API for Australian technology "
-        "job market analytics."
-    ),
+    description="REST API for Australian tech job analytics.",
     version="1.0.0",
 )
 
 
-# Allow local Next.js frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -29,9 +24,9 @@ app.add_middleware(
 )
 
 
-# -----------------------------------
-# 1. Root endpoint
-# -----------------------------------
+# Register analytics endpoints
+app.include_router(analytics_router)
+
 
 @app.get("/")
 def root():
@@ -41,17 +36,11 @@ def root():
     }
 
 
-# -----------------------------------
-# 2. Health check endpoint
-# -----------------------------------
-
 @app.get("/api/health")
 def health_check():
-
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
-
                 cur.execute("SELECT 1")
                 cur.fetchone()
 
@@ -67,16 +56,10 @@ def health_check():
         }
 
 
-# -----------------------------------
-# 3. Database statistics endpoint
-# -----------------------------------
-
 @app.get("/api/stats")
 def database_stats():
-
     with get_db_connection() as conn:
         with conn.cursor() as cur:
-
             cur.execute("""
                 SELECT
                     (SELECT COUNT(*) FROM jobs),
