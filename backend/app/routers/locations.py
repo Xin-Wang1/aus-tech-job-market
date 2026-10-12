@@ -1,4 +1,14 @@
+import logging
 
+from fastapi import APIRouter, HTTPException, Query
+from app.database import get_connection
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(
+    prefix="/api/skills",
+    tags=["Skills"],
+)
 from fastapi import APIRouter, HTTPException
 
 from app.database import get_connection
@@ -152,6 +162,11 @@ def get_location_detail(city: str):
         raise
 
     except Exception as exc:
+        logger.error(
+            "Unable to retrieve location details",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve location details",

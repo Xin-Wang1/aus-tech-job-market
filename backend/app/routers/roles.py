@@ -1,4 +1,14 @@
+import logging
 
+from fastapi import APIRouter, HTTPException, Query
+from app.database import get_connection
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(
+    prefix="/api/skills",
+    tags=["Skills"],
+)
 from fastapi import APIRouter, HTTPException
 
 from app.database import get_connection
@@ -8,6 +18,7 @@ router = APIRouter(
     prefix="/api/roles",
     tags=["Roles"],
 )
+
 
 
 # -----------------------------------------
@@ -145,6 +156,11 @@ def get_role_detail(role_name: str):
         raise
 
     except Exception as exc:
+        logger.error(
+            "Unable to retrieve role details",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve role details",

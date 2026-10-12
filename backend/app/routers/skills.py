@@ -1,4 +1,14 @@
+import logging
 
+from fastapi import APIRouter, HTTPException, Query
+from app.database import get_connection
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(
+    prefix="/api/skills",
+    tags=["Skills"],
+)
 from fastapi import APIRouter, HTTPException, Query
 
 from app.database import get_connection
@@ -78,6 +88,11 @@ def get_all_skills():
         }
 
     except Exception as exc:
+        logger.error(
+            "Failed to retrieve all skills",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve skills",
@@ -119,6 +134,11 @@ def get_top_skills(
         }
 
     except Exception as exc:
+        logger.error(
+            "Failed to retrieve top skills",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve top skills",
@@ -205,11 +225,15 @@ def get_skills_by_role(
         raise
 
     except Exception as exc:
+        logger.error(
+            "Unable to retrieve role skills",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve role skills",
         ) from exc
-
 
 # =========================================
 # 4. GET /api/skills/{skill_name}
@@ -303,6 +327,11 @@ def get_skill_detail(skill_name: str):
         raise
 
     except Exception as exc:
+        logger.error(
+            "Unable to retrieve skill details",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve skill details",

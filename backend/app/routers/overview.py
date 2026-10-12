@@ -1,16 +1,21 @@
+import logging
 
-from fastapi import APIRouter, HTTPException
-
-from app.database import get_connection
-
-
+logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/api",
     tags=["Overview"],
 )
+from fastapi import APIRouter, HTTPException
+
+from app.database import get_connection
+
+from app.schemas.overview import OverviewResponse
 
 
-@router.get("/overview")
+@router.get(
+    "/overview",
+    response_model=OverviewResponse,
+)
 def get_overview():
     """
     Return summary statistics and distributions
@@ -160,8 +165,11 @@ def get_overview():
         }
 
     except Exception as exc:
-        # Avoid exposing SQL or connection details
-        # to API consumers.
+        logger.error(
+            "Failed to retrieve overview data",
+            exc_info=True,
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve overview data",
