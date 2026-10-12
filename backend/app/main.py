@@ -6,7 +6,7 @@ from app.database import get_connection
 from app.routers.overview import router as overview_router
 from app.routers.roles import router as roles_router
 from app.routers.locations import router as locations_router
-
+from app.routers.skills import router as skills_router
 
 
 # Create FastAPI application
@@ -21,7 +21,7 @@ app = FastAPI(
 app.include_router(overview_router)
 app.include_router(roles_router)
 app.include_router(locations_router)
-
+app.include_router(skills_router)
 
 # Allow the local Next.js frontend to access the API
 app.add_middleware(
