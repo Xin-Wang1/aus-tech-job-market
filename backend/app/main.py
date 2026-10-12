@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_connection
-
+from app.routers.overview import router as overview_router
 
 # Create FastAPI application
 app = FastAPI(
@@ -14,7 +14,7 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
-
+app.include_router(overview_router)
 
 # Allow the local Next.js frontend to access the API
 app.add_middleware(
