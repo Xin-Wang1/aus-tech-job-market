@@ -182,11 +182,11 @@ def get_skills(
 # GET /api/skills/by-role
 # =====================================
 
+
 @router.get("/skills/by-role")
 def get_skills_by_role(
     role: str | None = Query(default=None)
 ):
-
     query = """
         SELECT
             j.role_category,
@@ -197,7 +197,17 @@ def get_skills_by_role(
             ON j.job_id = js.job_id
         JOIN skills AS s
             ON js.skill_id = s.skill_id
-        WHERE (%s IS NULL OR j.role_category = %s)
+    """
+
+    params = None
+
+    if role:
+        query += """
+            WHERE j.role_category = %s
+        """
+        params = (role,)
+
+    query += """
         GROUP BY
             j.role_category,
             s.skill_id,
@@ -208,10 +218,7 @@ def get_skills_by_role(
             s.skill_name
     """
 
-    rows = fetch_all(
-        query,
-        (role, role),
-    )
+    rows = fetch_all(query, params)
 
     return {
         "data": rows,

@@ -1,29 +1,24 @@
 
 import os
-from contextlib import contextmanager
 from pathlib import Path
 
 import psycopg
 from dotenv import load_dotenv
 
 
-# Locate backend directory
+# Backend root directory
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 
 # Load environment variables
 load_dotenv(BACKEND_DIR / ".env", override=True)
 
 
-@contextmanager
-def get_db_connection():
+def get_connection():
     """
-    Create a PostgreSQL connection.
-
-    The connection is closed automatically
-    when the context manager exits.
+    Create a PostgreSQL database connection.
     """
 
-    conn = psycopg.connect(
+    return psycopg.connect(
         host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "5432"),
         dbname=os.getenv("DB_NAME"),
@@ -31,8 +26,3 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD"),
         connect_timeout=10,
     )
-
-    try:
-        yield conn
-    finally:
-        conn.close()

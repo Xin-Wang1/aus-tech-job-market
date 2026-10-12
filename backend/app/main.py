@@ -1,17 +1,22 @@
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import get_db_connection
-from app.routers.analytics import router as analytics_router
+from app.database import get_connection
 
 
+# Create FastAPI application
 app = FastAPI(
     title="Australian Tech Job Market API",
-    description="REST API for Australian tech job analytics.",
+    description=(
+        "REST API for analysing Australian "
+        "technology job posting samples."
+    ),
     version="1.0.0",
 )
 
 
+# Allow the local Next.js frontend to access the API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -24,10 +29,7 @@ app.add_middleware(
 )
 
 
-# Register analytics endpoints
-app.include_router(analytics_router)
-
-
+# Root endpoint
 @app.get("/")
 def root():
     return {
@@ -36,42 +38,38 @@ def root():
     }
 
 
+# Health check endpoint
 @app.get("/api/health")
 def health_check():
+    return {
+        "status": "ok",
+        "service": "aus-tech-job-market-api",
+    }
+
+
+# Database health check endpoint
+@app.get("/api/health/db")
+def database_health_check():
     try:
-        with get_db_connection() as conn:
+        with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT 1")
-                cur.fetchone()
+                result = cur.fetchone()
+
+        if result is None or result[0] != 1:
+            raise RuntimeError("Database health check failed")
 
         return {
-            "status": "healthy",
+            "status": "ok",
             "database": "connected",
         }
 
     except Exception:
-        return {
-            "status": "unhealthy",
-            "database": "disconnected",
-        }
+        # Do not expose database credentials or internal
+        # connection errors in the HTTP response.
+        from fastapi import HTTPException
 
-
-@app.get("/api/stats")
-def database_stats():
-    with get_db_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT
-                    (SELECT COUNT(*) FROM jobs),
-                    (SELECT COUNT(*) FROM skills),
-                    (SELECT COUNT(*) FROM job_skills)
-            """)
-
-            jobs, skills, relationships = cur.fetchone()
-
-    return {
-        "total_jobs": jobs,
-        "total_skills": skills,
-        "total_job_skill_relationships": relationships,
-        "data_type": "sample",
-    }
+        raise HTTPException(
+            status_code=503,
+            detail="Database unavailable",
+        )
