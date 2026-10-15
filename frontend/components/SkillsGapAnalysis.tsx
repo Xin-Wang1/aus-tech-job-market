@@ -53,8 +53,7 @@ export default function SkillsGapAnalysis({
       </h2>
 
       <p className="mt-2 text-slate-600">
-        Select the skills you already have to identify
-        areas for improvement.
+        Select the skills you already have and compare them with skills detected in advertisements for this role.
       </p>
 
       {/* Target Role */}
@@ -174,8 +173,7 @@ export default function SkillsGapAnalysis({
       </div>
 
       <p className="mt-6 text-xs text-slate-500">
-        Skill coverage is based on the demo skill list,
-        not an actual recruitment match score.
+        Coverage reflects your selections against skills detected in this small job sample, not all role requirements or an actual recruitment match score.
       </p>
     </section>
   );
